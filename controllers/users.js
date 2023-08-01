@@ -21,18 +21,21 @@ module.exports.addUser = (req, res) => {
 };
 
 module.exports.getUserById = (req, res) => {
-  if (req.params.userId.length === 24) {
-    User.findById(req.params.userId)
-      .then((user) => {
-        if (!user.name) {
-          res.status(404).send({ message: 'Пользователь не найден' });
-          return;
-        }
-        res.send(user);
-      });
-  } else {
-    res.status(400).send({ message: 'Некорректный id' });
-  }
+  User.findById(req.params.userId)
+    .then((user) => {
+      if (!user.name) {
+        res.status(404).send({ message: 'Пользователь не найден' });
+        return;
+      }
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: err.message });
+      } else {
+        res.status(404).send({ message: 'Пользователь не найден' });
+      }
+    });
 };
 
 module.exports.updateUserInfo = (req, res) => {
