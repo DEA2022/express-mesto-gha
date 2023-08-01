@@ -8,13 +8,13 @@ module.exports.createCard = (req, res) => {
       Card.findById(card._id)
         .populate('owner')
         .then((data) => res.status(201).send(data))
-        .catch(() => res.status(404).send({ message: 'Карточка с таким id не найдена' }));
+        .catch((error) => res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` }));
     })
     .catch((error) => {
-      if (error.name !== 'ValidationError') {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      if (error.name === 'ValidationError') {
+        res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
       } else {
-        res.status(400).send({ message: error.message });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -28,38 +28,38 @@ module.exports.getCards = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => {
+    .then((card, error) => {
       if (!card) {
-        res.status(404).send({ message: 'Карточка с таким id не найдена' });
+        res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
         return;
       }
       res.send({ message: 'Карточка успешно удалена' });
     })
-    .catch(() => res.status(400).send({ message: 'Введены некорректные данные' }));
+    .catch((error) => res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` }));
 };
 
 module.exports.addLike = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .populate(['owner', 'likes'])
-    .then((card) => {
+    .then((card, error) => {
       if (!card) {
-        res.status(404).send({ message: 'Карточка с таким id не найдена' });
+        res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
         return;
       }
       res.send(card);
     })
-    .catch(() => res.status(400).send({ message: 'Введены некорректные данные' }));
+    .catch((error) => res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` }));
 };
 
 module.exports.deleteLike = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .populate(['owner', 'likes'])
-    .then((card) => {
+    .then((card, error) => {
       if (!card) {
-        res.status(404).send({ message: 'Карточка с таким id не найдена' });
+        res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
         return;
       }
       res.send(card);
     })
-    .catch(() => res.status(400).send({ message: 'Введены некорректные данные' }));
+    .catch((error) => res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` }));
 };

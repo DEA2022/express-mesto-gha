@@ -12,10 +12,10 @@ module.exports.addUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send({ data: user }))
     .catch((error) => {
-      if (error.name !== 'ValidationError') {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      if (error.name === 'ValidationError') {
+        res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
       } else {
-        res.status(400).send({ message: error.message });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -29,11 +29,11 @@ module.exports.getUserById = (req, res) => {
       }
       res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: err.message });
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
       } else {
-        res.status(404).send({ message: 'Пользователь не найден' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -43,11 +43,11 @@ module.exports.updateUserInfo = (req, res) => {
   if (req.user._id) {
     User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
       .then((user) => res.send(user))
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
-          res.status(400).send({ message: err.message });
+      .catch((error) => {
+        if (error.name === 'ValidationError') {
+          res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
         } else {
-          res.status(404).send({ message: 'Пользователь не найден' });
+          res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
         }
       });
   } else {
@@ -63,11 +63,11 @@ module.exports.updateUserAvatar = (req, res) => {
       { new: true, runValidators: true },
     )
       .then((user) => res.send(user))
-      .catch(((err) => {
-        if (err.name === 'ValidationError') {
-          res.status(400).send({ message: err.message });
+      .catch(((error) => {
+        if (error.name === 'ValidationError') {
+          res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
         } else {
-          res.status(404).send({ message: 'Пользователь не найден' });
+          res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
         }
       }));
   } else {
