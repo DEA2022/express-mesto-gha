@@ -29,9 +29,9 @@ module.exports.getCards = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then((card, error) => {
+    .then((card) => {
       if (!card) {
-        res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
+        res.status(404).send({ message: 'Карточка не найдена' });
         return;
       }
       res.send({ message: 'Карточка успешно удалена' });
@@ -41,15 +41,15 @@ module.exports.deleteCard = (req, res) => {
 
 module.exports.addLike = (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
-    res.status(400).send({ message: 'Некорректный идентификатор' });
+    res.status(400).send({ message: 'Некорректный id' });
     return;
   }
 
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .populate(['owner', 'likes'])
-    .then((card, error) => {
+    .then((card) => {
       if (!card) {
-        res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
+        res.status(404).send({ message: 'Карточка не найдена' });
         return;
       }
       res.send(card);
@@ -60,9 +60,9 @@ module.exports.addLike = (req, res) => {
 module.exports.deleteLike = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .populate(['owner', 'likes'])
-    .then((card, error) => {
+    .then((card) => {
       if (!card) {
-        res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
+        res.status(404).send({ message: 'Карточка не найдена' });
         return;
       }
       res.send(card);
