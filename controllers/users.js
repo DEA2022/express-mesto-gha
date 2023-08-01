@@ -31,7 +31,7 @@ module.exports.getUserById = (req, res) => {
         res.send(user);
       });
   } else {
-    res.status(406).send({ message: 'Некорректный id' });
+    res.status(400).send({ message: 'Некорректный id' });
   }
 };
 
