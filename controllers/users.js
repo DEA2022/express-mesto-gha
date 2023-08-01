@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
@@ -21,9 +22,15 @@ module.exports.addUser = (req, res) => {
 };
 
 module.exports.getUserById = (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.userId)) {
+    res.status(400).send({ message: 'Некорректный id' });
+
+    return;
+  }
+
   User.findById(req.params.userId)
     .then((user) => {
-      if (!user.name) {
+      if (!user) {
         res.status(404).send({ message: 'Пользователь не найден' });
         return;
       }
