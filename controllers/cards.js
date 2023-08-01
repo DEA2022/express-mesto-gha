@@ -67,5 +67,5 @@ module.exports.deleteLike = (req, res) => {
       }
       res.send(card);
     })
-    .catch((error) => res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` }));
+    .catch(() => res.status(400).send({ message: 'Некорректный id' }));
 };
