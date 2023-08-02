@@ -36,36 +36,40 @@ module.exports.deleteCard = (req, res) => {
       }
       res.send({ message: 'Карточка успешно удалена' });
     })
-    .catch((error) => res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` }));
-};
-
-module.exports.addLike = (req, res) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
-    res.status(400).send({ message: 'Некорректный id' });
-    return;
-  }
-
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .populate(['owner', 'likes'])
-    .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Карточка не найдена' });
-        return;
+    .catch((error) => {
+      if (error) {
+        res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
       }
-      res.send(card);
-    })
-    .catch((error) => res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` }));
-};
+    }
+    );
 
-module.exports.deleteLike = (req, res) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .populate(['owner', 'likes'])
-    .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Карточка не найдена' });
-        return;
-      }
-      res.send(card);
-    })
-    .catch(() => res.status(400).send({ message: 'Некорректный id' }));
-};
+  module.exports.addLike = (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
+      res.status(400).send({ message: 'Некорректный id' });
+      return;
+    }
+
+    Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+      .populate(['owner', 'likes'])
+      .then((card) => {
+        if (!card) {
+          res.status(404).send({ message: 'Карточка не найдена' });
+          return;
+        }
+        res.send(card);
+      })
+      .catch((error) => res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` }));
+  };
+
+  module.exports.deleteLike = (req, res) => {
+    Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
+      .populate(['owner', 'likes'])
+      .then((card) => {
+        if (!card) {
+          res.status(404).send({ message: 'Карточка не найдена' });
+          return;
+        }
+        res.send(card);
+      })
+      .catch(() => res.status(400).send({ message: 'Некорректный id' }));
+  };
