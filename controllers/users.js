@@ -1,12 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
 
-module.exports.getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.send(users))
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
-};
-
 module.exports.addUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
@@ -14,11 +8,17 @@ module.exports.addUser = (req, res) => {
     .then((user) => res.status(201).send({ data: user }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
       } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
+};
+
+module.exports.getUsers = (req, res) => {
+  User.find({})
+    .then((users) => res.send(users))
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -31,14 +31,14 @@ module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь не найден' });
+        res.status(404).send({ message: 'Пользователь с указанным id не найден' });
         return;
       }
       res.send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
+        res.status(400).send({ message: 'Некорректный id' });
       } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
@@ -52,9 +52,9 @@ module.exports.updateUserInfo = (req, res) => {
       .then((user) => res.send(user))
       .catch((error) => {
         if (error.name === 'ValidationError') {
-          res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
+          res.status(400).send({ message: 'Переданы некорректные данные при обновлении информации о пользователе' });
         } else {
-          res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
+          res.status(404).send({ message: 'Пользователь с указанным id не найден' });
         }
       });
   } else {
@@ -72,9 +72,9 @@ module.exports.updateUserAvatar = (req, res) => {
       .then((user) => res.send(user))
       .catch(((error) => {
         if (error.name === 'ValidationError') {
-          res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
+          res.status(400).send({ message: 'Передан некорректный url' });
         } else {
-          res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
+          res.status(404).send({ message: 'Пользователь с указанным id не найден' });
         }
       }));
   } else {

@@ -9,11 +9,11 @@ module.exports.createCard = (req, res) => {
       Card.findById(card._id)
         .populate('owner')
         .then((data) => res.status(201).send(data))
-        .catch((error) => res.status(404).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` }));
+        .catch(() => res.status(404).send({ message: 'Карточка с указанным id не найдена' }));
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
+        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
       } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
@@ -31,16 +31,12 @@ module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Карточка не найдена' });
+        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
         return;
       }
       res.send({ message: 'Карточка успешно удалена' });
     })
-    .catch((error) => {
-      if (error) {
-        res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` });
-      }
-    });
+    .catch(() => res.status(400).send({ message: 'Некорректный id' }));
 };
 
 module.exports.addLike = (req, res) => {
@@ -53,12 +49,12 @@ module.exports.addLike = (req, res) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Карточка не найдена' });
+        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
         return;
       }
       res.send(card);
     })
-    .catch((error) => res.status(400).send({ message: `${Object.values(error.errors).map(() => error.message).join(', ')}` }));
+    .catch(() => res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка' }));
 };
 
 module.exports.deleteLike = (req, res) => {
@@ -66,10 +62,10 @@ module.exports.deleteLike = (req, res) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Карточка не найдена' });
+        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
         return;
       }
       res.send(card);
     })
-    .catch(() => res.status(400).send({ message: 'Некорректный id' }));
+    .catch(() => res.status(400).send({ message: 'Переданы некорректные данные для снятия лайка' }));
 };
