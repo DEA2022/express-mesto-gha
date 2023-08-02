@@ -24,5 +24,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
+app.all('/*', (req, res) => {
+  res.status(404).json({
+    message: 'Страница не найдена',
+  });
+});
 
 app.listen(PORT);
