@@ -16,12 +16,12 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     required: true,
-    validate: {
-      validator(v) {
-        return /(^https?:\/\/)?[a-z0-9~_\-.]+\.[a-z]{2,9}(\/|:|\?[!-~]*)?$/i.test(v);
-      },
-      message: 'Введите URL',
-    },
+    // validate: {
+    //   validator(v) {
+    //     return /(^https?:\/\/)?[a-z0-9~_\-.]+\.[a-z]{2,9}(\/|:|\?[!-~]*)?$/i.test(v);
+    //   },
+    //   message: 'Введите URL',
+    // },
   },
 });
 
