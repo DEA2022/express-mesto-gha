@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const errorConstants = require('http2').constants;
 const Card = require('../models/card');
 
 module.exports.createCard = (req, res) => {
@@ -8,20 +9,20 @@ module.exports.createCard = (req, res) => {
       Card.findById(card._id)
         .orFail()
         .populate('owner')
-        .then((data) => res.status(201).send(data))
+        .then((data) => res.status(errorConstants.HTTP_STATUS_CREATED).send(data))
         .catch((error) => {
           if (error instanceof mongoose.Error.DocumentNotFoundError) {
-            res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+            res.status(errorConstants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
           } else {
-            res.status(500).send({ message: 'На сервере произошла ошибка' });
+            res.status(errorConstants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
           }
         });
     })
     .catch((error) => {
       if (error instanceof mongoose.Error.ValidationError) {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
+        res.status(errorConstants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки' });
       } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+        res.status(errorConstants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -30,7 +31,7 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
+    .catch(() => res.status(errorConstants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -39,11 +40,11 @@ module.exports.deleteCard = (req, res) => {
     .then(() => res.send({ message: 'Карточка успешно удалена' }))
     .catch((error) => {
       if (error instanceof mongoose.Error.CastError) {
-        res.status(400).send({ message: 'Некорректный id' });
+        res.status(errorConstants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Некорректный id' });
       } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
-        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+        res.status(errorConstants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
       } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+        res.status(errorConstants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -55,13 +56,13 @@ module.exports.addLike = (req, res) => {
     .then((card) => res.send(card))
     .catch((error) => {
       if (error instanceof mongoose.Error.ValidationError) {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
+        res.status(errorConstants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки' });
       } else if (error instanceof mongoose.Error.CastError) {
-        res.status(400).send({ message: 'Некорректный id' });
+        res.status(errorConstants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Некорректный id' });
       } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
-        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+        res.status(errorConstants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
       } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+        res.status(errorConstants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -73,13 +74,13 @@ module.exports.deleteLike = (req, res) => {
     .then((card) => res.send(card))
     .catch((error) => {
       if (error instanceof mongoose.Error.ValidationError) {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
+        res.status(errorConstants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки' });
       } else if (error instanceof mongoose.Error.CastError) {
-        res.status(400).send({ message: 'Некорректный id' });
+        res.status(errorConstants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Некорректный id' });
       } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
-        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+        res.status(errorConstants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
       } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+        res.status(errorConstants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
