@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
 const errorConstants = require('http2').constants;
+const mongoose = require('mongoose');
 const User = require('../models/user');
 
 module.exports.addUser = (req, res) => {
