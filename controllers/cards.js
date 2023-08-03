@@ -12,7 +12,7 @@ module.exports.createCard = (req, res) => {
         .catch(() => res.status(404).send({ message: 'Карточка с указанным id не найдена' }));
     })
     .catch((error) => {
-      if (error.name === 'ValidationError') {
+      if (error instanceof mongoose.Error.ValidationError) {
         res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
       } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
@@ -36,7 +36,13 @@ module.exports.deleteCard = (req, res) => {
       }
       res.send({ message: 'Карточка успешно удалена' });
     })
-    .catch(() => res.status(400).send({ message: 'Некорректный id' }));
+    .catch((error) => {
+      if (error instanceof mongoose.Error.CastError) {
+        res.status(400).send({ message: 'Некорректный id' });
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      }
+    });
 };
 
 module.exports.addLike = (req, res) => {
@@ -54,7 +60,13 @@ module.exports.addLike = (req, res) => {
       }
       res.send(card);
     })
-    .catch(() => res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка' }));
+    .catch((error) => {
+      if (error instanceof mongoose.Error.ValidationError) {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      }
+    });
 };
 
 module.exports.deleteLike = (req, res) => {
@@ -67,5 +79,11 @@ module.exports.deleteLike = (req, res) => {
       }
       res.send(card);
     })
-    .catch(() => res.status(400).send({ message: 'Переданы некорректные данные для снятия лайка' }));
+    .catch((error) => {
+      if (error instanceof mongoose.Error.ValidationError) {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      }
+    });
 };
