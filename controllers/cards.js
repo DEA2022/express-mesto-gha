@@ -55,9 +55,7 @@ module.exports.addLike = (req, res) => {
     .populate(['owner', 'likes'])
     .then((card) => res.send(card))
     .catch((error) => {
-      if (error instanceof mongoose.Error.ValidationError) {
-        res.status(errorConstants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки' });
-      } else if (error instanceof mongoose.Error.CastError) {
+      if (error instanceof mongoose.Error.CastError) {
         res.status(errorConstants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Некорректный id' });
       } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
         res.status(errorConstants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
@@ -73,9 +71,7 @@ module.exports.deleteLike = (req, res) => {
     .populate(['owner', 'likes'])
     .then((card) => res.send(card))
     .catch((error) => {
-      if (error instanceof mongoose.Error.ValidationError) {
-        res.status(errorConstants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки' });
-      } else if (error instanceof mongoose.Error.CastError) {
+      if (error instanceof mongoose.Error.CastError) {
         res.status(errorConstants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Некорректный id' });
       } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
         res.status(errorConstants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
