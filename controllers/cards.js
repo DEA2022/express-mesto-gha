@@ -35,6 +35,7 @@ module.exports.getCards = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
+    .orFail();
     .then(() => res.send({ message: 'Карточка успешно удалена' }))
     .catch((error) => {
       if (error instanceof mongoose.Error.CastError) {
