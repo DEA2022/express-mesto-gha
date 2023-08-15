@@ -40,8 +40,9 @@ module.exports.getCards = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
+      console.log(card);
       if (card && !card.owner.equals(req.user._id)) {
-        throw new ForbiddenError('Вы не можете удалять чужие карточки');
+        next(new ForbiddenError('Вы не можете удалять чужие карточки'));
       }
       Card.findByIdAndRemove(req.params.cardId)
         .orFail()
