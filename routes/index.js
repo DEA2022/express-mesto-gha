@@ -1,14 +1,34 @@
-const errorConstants = require('http2').constants;
 const router = require('express').Router();
-const usersRouter = require('./users');
-const cardsRouter = require('./cards');
+const { celebrate, Joi } = require('celebrate');
+const { login, addUser } = require('../controllers/users');
+const auth = require('../middlewares/auth');
+const validateUrl = require('../utils/constants');
+const NotFoundError = require('../errors/NotFoundError');
 
-router.use('/users', usersRouter);
-router.use('/cards', cardsRouter);
-router.use('/*', (req, res) => {
-  res.status(errorConstants.HTTP_STATUS_NOT_FOUND).json({
-    message: 'Страница не найдена',
-  });
+router.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+}), login);
+
+router.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(validateUrl),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }).unknown(true),
+}), addUser);
+
+router.use(auth);
+
+router.use('/users', require('./users'));
+router.use('/cards', require('./cards'));
+
+router.use('*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
 });
 
 module.exports = router;
