@@ -22,8 +22,7 @@ module.exports.addUser = (req, res, next) => {
     .catch((error) => {
       if (error.code === 11000) {
         next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
-      }
-      if (error instanceof mongoose.Error.ValidationError) {
+      } else if (error instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
       next(error);

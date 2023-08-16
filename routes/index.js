@@ -19,7 +19,7 @@ router.post('/signup', celebrate({
     avatar: Joi.string().pattern(validateUrl),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
-  }).unknown(true),
+  }),
 }), addUser);
 
 router.use(auth);
